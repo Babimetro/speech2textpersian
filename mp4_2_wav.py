@@ -18,7 +18,7 @@ def convert_video_to_audio_moviepy(video_file,audio_url, output_ext="wav"):
     names=os.path.basename(filename).split('/')[-1]
     clip.audio.write_audiofile(audio_url+"/"+f"{names}.{output_ext}")
   
-def audio_word_spliter(audio_file):
+def audio_word_spliter(audio_file,path):
 
     sound_file = AudioSegment.from_wav(audio_file)
     audio_chunks = split_on_silence(sound_file, 
@@ -29,8 +29,8 @@ def audio_word_spliter(audio_file):
     silence_thresh=-16
     )
     
-    for i, chunk in enumerate(audio_chunks):
+    for i, chunk in enumerate(audio_chunks,path):
     
-        out_file = ".//splitAudio//chunk{0}.wav".format(i)
-        print "exporting", out_file
+        out_file = path+"//"+"chunk{0}.wav".format(i)
+        print ("exporting", out_file)
         chunk.export(out_file, format="wav")

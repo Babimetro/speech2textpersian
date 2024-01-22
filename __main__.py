@@ -24,6 +24,7 @@ sqlite_select_query = """SELECT * from init"""
 df=pd.read_sql(sqlite_select_query,sqliteConnection)
 vf=df['video_url'][0]
 af=df['audio_url'][0]
+chf=df['voice_url'][0]
 vfilelist=[]
 for path, subdirs, files in os.walk(vf):
     for name in files:
@@ -40,7 +41,7 @@ for path, subdirs, files in os.walk(af):
         afls.append(os.path.join(path, name))
 
 for anf in afls:
-    mw.convert_video_to_audio_moviepy(nf, af)
+    mw.audio_word_spliter(anf,chf)
 
 
 '''
