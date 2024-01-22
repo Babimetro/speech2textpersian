@@ -2,11 +2,13 @@
 """
 Created on Fri Dec 22 16:10:01 2023
 
-@author: babimetro
+@author: babimetro`
 """
 
 import os
 from moviepy.editor import VideoFileClip
+from pydub import AudioSegment
+from pydub.silence import split_on_silence
 
 def convert_video_to_audio_moviepy(video_file,audio_url, output_ext="wav"):
     """Converts video to audio using MoviePy library
@@ -16,5 +18,19 @@ def convert_video_to_audio_moviepy(video_file,audio_url, output_ext="wav"):
     names=os.path.basename(filename).split('/')[-1]
     clip.audio.write_audiofile(audio_url+"/"+f"{names}.{output_ext}")
   
+def audio_word_spliter(audio_file):
 
- 
+    sound_file = AudioSegment.from_wav(audio_file)
+    audio_chunks = split_on_silence(sound_file, 
+    # must be silent for at least half a second
+    min_silence_len=500,
+
+    # consider it silent if quieter than -16 dBFS
+    silence_thresh=-16
+    )
+    
+    for i, chunk in enumerate(audio_chunks):
+    
+        out_file = ".//splitAudio//chunk{0}.wav".format(i)
+        print "exporting", out_file
+        chunk.export(out_file, format="wav")
