@@ -4,11 +4,22 @@ Created on Sat Jan 13 23:13:08 2024
 
 @author: babimetro
 """
+#===============================
+#
+#      
+#    Liberaries
+#
+#================================
 
-import   sqlite3 as sq
+
+import sqlite3 as sq
 import pandas as pd 
 import os
-import mp4_2_wav as mw
+import Functions as mw
+from Functions import lent
+
+
+
 
 try:
     os.chdir('D:\git\stt')
@@ -41,8 +52,20 @@ for path, subdirs, files in os.walk(af):
         afls.append(os.path.join(path, name))
 
 for anf in afls:
-    mw.audio_word_spliter(anf,chf)
+    #mw.audio_word_spliter(anf,chf)
+    #split_in_parts(anf, chf)
+    lent(anf,15,chf)
 
+stts=[]
+for path, subdirs, files in os.walk(chf):
+    for name in files:
+        print(os.path.join(path, name))
+        stts.append(os.path.join(path, name))
+
+for stt in stts:
+    #mw.audio_word_spliter(anf,chf)
+    #split_in_parts(anf, chf)
+    mw.sttv(stt, "fa")
 
 '''
 # Get the list of all files and directories
