@@ -11,14 +11,18 @@ Created on Sat Jan 13 23:13:08 2024
 #
 #================================
 
+try:
+    os.chdir('D:\git\stt')
+    print(os.getcwd())
+except:
+    pass
+
 
 import sqlite3 as sq
 import pandas as pd 
 import os
 import Functions as mw
 from Functions import lent
-
-
 
 
 try:

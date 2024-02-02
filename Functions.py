@@ -19,6 +19,8 @@ import numpy as np
 #import vflibrosa
 import soundfile as sf
 import speech_recognition as sr
+import sqlite3 as sq
+import pandas as pd
 
 def convert_video_to_audio_moviepy(video_file,audio_url, output_ext="wav"):
     """Converts video to audio using MoviePy library
@@ -134,11 +136,39 @@ r = sr.Recognizer()
 #r.recognize_google('english')
 
 def sttv(wavefile,lang):
+    try:
+        sqliteConnection = sq.connect('stt1.db')
+        cursor = sqliteConnection.cursor()
+        
+        print("Successfully Connected to SQLite")
+    except sq.Error as error:
+        print("Failed to insert data into sqlite table", error)
+        
+ 
     harvard = sr.AudioFile(wavefile)
     with harvard as source:
         print(wavefile)
         audio = r.record(source)
         if lang=='':
-            print(r.recognize_google(audio))
+            text=r.recognize_google(audio)
+            print(text)
         else:
-            print(r.recognize_google(audio,language = lang))
+            try:
+                text=r.recognize_google(audio,language = lang)
+                print(text)
+            except:
+                text="no text detected."
+                print(text)
+            
+            
+        
+        
+        sqlite_insert_query = """INSERT INTO stt
+                      (filename, text) 
+                       VALUES 
+                      (?,?)"""
+
+        count = cursor.execute(sqlite_insert_query,(wavefile,text))
+        sqliteConnection.commit()
+        print("Record inserted successfully into SqliteDb_developers table ", cursor.rowcount)
+    
