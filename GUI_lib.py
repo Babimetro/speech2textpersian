@@ -2,9 +2,9 @@ import PySimpleGUI as sg
 
  
 
-def filebrowser():
+def filebrowser(theme):
 
-    sg.theme("DarkTeal2")
+    sg.theme(theme)
 
     layout = [[sg.T("")],
 
@@ -42,9 +42,9 @@ def filebrowser():
 
  
 
-def folderbrowser():
+def folderbrowser(theme):
 
-    sg.theme("DarkTeal2")
+    sg.theme(theme)
 
     layout = [[sg.T("")], [sg.Text("Choose a folder: "), sg.Input(), sg.FolderBrowse(key="-IN-")],[sg.Button("Submit")]]
 

@@ -10,8 +10,8 @@ Created on Sat Jan 13 23:13:08 2024
 #    Liberaries
 #
 #================================
-import sqlite3 as sq
-import pandas as pd 
+#import sqlite3 as sq
+#import pandas as pd 
 import os
 import Functions as mw
 from Functions import lent
@@ -23,6 +23,8 @@ import GUI_lib as gui
 #    Gui
 #
 #================================
+theme="BlueMono"
+sg.theme(theme)
 
 frame_layout = [[sg.Multiline("", size=(80, 20), autoscroll=True,
 
@@ -30,123 +32,106 @@ frame_layout = [[sg.Multiline("", size=(80, 20), autoscroll=True,
 
  
 
-layout=[[sg.Text('My window')],
+layout=[[sg.Text('Online STT')],
 
-        [sg.Button('Video Folder Location'),sg.Button('Audio Folder Location'),sg.Button('Voice Folder Location'),sg.Button('Close')],
+        [sg.Button('Video Folder Location'),sg.Button('Audio Folder Location'),sg.Button('Voice Folder Location')],
 
         [sg.Frame("Output console", frame_layout)],
-        [sg.Button('Video to Audio'),sg.Button('Audio Slicing'),sg.Button('Converting')]
+        [sg.Button('Video to Audio'),sg.Button('Audio Slicing'),sg.Button('STT'),sg.Button('Close')],
 
-       
-
+        [sg.ProgressBar(100, orientation='h', expand_x=True, size=(20, 20),  key='-PBAR-')  ],
+        [sg.Text('', key='-OUT-', enable_events=True, font=('Arial Bold', 16), justification='center', expand_x=True)]
                 
 
         ]
 
-window=sg.Window("My application",layout,size=(400,400))
-
+window=sg.Window("Video STT-Babi",layout,size=(500,550))
+#window['-OUT-'].update("0%")
  
 
 while True:
 
     event,values=window.read()
 
-    if event in (None,'Cancel'):
+    #=================Folder Configuration===================
+    #=======================Video============================
+    if event=='Video Folder Location':
 
-        window.close()
+        vf=gui.folderbrowser(theme)
 
-    elif event=='Close':
-
-        window.close()
-
-    elif event=='Video Folder Location':
-
-        vf=gui.folderbrowser()
-
-        print('Video Folder Location='+vf)
+        print('Video Folder Location set to ='+vf)
+    #=======================Audio============================
     elif event=='Audio Folder Location':
 
-        af=gui.folderbrowser()
+        af=gui.folderbrowser(theme)
 
-        print('Audio Folder Location'+af)
-        
+        print('Audio Folder Location set to ='+af)
+    #=======================Voice============================    
     elif event=='Voice Folder Location':
 
-        chf=gui.folderbrowser()
+        chf=gui.folderbrowser(theme)
 
-        print('Voice Folder Location'+chf)
-    elif event=='Voice Folder Location':
-
-        chf=gui.folderbrowser()
-
-        print('Voice Folder Location'+chf)
+        print('Voice Chunk Folder Location set to ='+chf)
         
+    #=================Buttons=====================================
+    #====================Video t Audio Convertor==================
     elif event=='Video to Audio':
-    
         vfilelist=[]
         for path, subdirs, files in os.walk(vf):
             for name in files:
                 print(os.path.join(path, name))
                 vfilelist.append(os.path.join(path, name))
-        
+        vff=vfilelist
+        i=0
+        window['-OUT-'].update(str(i)+"%")
         for vnf in vfilelist:
+
             mw.convert_video_to_audio_moviepy(vnf, af)
+            i=i+round(100/len(vfilelist),0)
+            window['-PBAR-'].update(current_count=i )
+            window['-OUT-'].update(str(i)+"%")
 
-
-        print('Voice Folder Location'+chf)
-        
-    elif event=='Voice Folder Location':
+    #=================Buttons=====================================
+    #=========================='Audio Slicing'====================       
+    elif event=='Audio Slicing':
 
         afls=[]
         for path, subdirs, files in os.walk(af):
             for name in files:
                 print(os.path.join(path, name))
                 afls.append(os.path.join(path, name))
-
+        i=0
+        window['-OUT-'].update(str(i)+"%")
         for anf in afls:
-            #mw.audio_word_spliter(anf,chf)
-            #split_in_parts(anf, chf)
+            i=i+round(100/len(afls),0)
+            window['-PBAR-'].update(current_count=i )
+            window['-OUT-'].update(str(i)+"%")
             lent(anf,15,chf)
+    #=================Buttons=====================================
+    #========================'Audio Slicing'====================    
 
-
-    elif event=='Voice Folder Location':
+    elif event=='STT':
  
         stts=[]
         for path, subdirs, files in os.walk(chf):
             for name in files:
                 print(os.path.join(path, name))
                 stts.append(os.path.join(path, name))
-        
+        i=0
+        window['-OUT-'].update(str(i)+"%")       
         for stt in stts:
-            #mw.audio_word_spliter(anf,chf)
-            #split_in_parts(anf, chf)
+            i=i+round(100/len(stts),0)
+            window['-PBAR-'].update(current_count=i )
+            window['-OUT-'].update(str(i)+"%")
             mw.sttv(stt, "fa")
-   
-#===============================
-#
-#      
-#    Collect input file list
-#
-#================================
+    
+    #=====================================================================
+    #=====================================================================  
+    #================================ Exit ===============================
+    elif event in (None,'Cancel') or event=='Close' or event == sg.WIN_CLOSED :
 
-
-
-
-'''
-# Get the list of all files and directories
-path = df['video_url'][0]
-dir_list = os.listdir(path)
- 
-print("Files and directories in '", path, "' :")
- 
-# prints all files
-print(dir_list)
-
-for files in dir_list:
-    vfile=path+"/"+files
-    print(vfile)
-    mw.convert_video_to_audio_moviepy(vfile,df['audio_url'][0])
-'''
- 
+        break
+      
+    
 
 window.close()
